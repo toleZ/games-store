@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="js/index.js"></script>
+    <!-- CSS only -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/jam-icons/css/jam.min.css" />
+
+    <title>Checkout</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="col-12 row mb-4">
+        <span class="fs-1 text-center">Shopping Cart</span>
+        <span class="fs-6 text-center"
+          ><span class="text-info">3</span> items in your cart</span
+        >
+      </div>
+
+      <div class="row col-12 shadow-sm">
+        <div class="row py-3 m-0">
+          <span class="col-5 fs-5"> Product </span>
+          <span class="col-3 text-center fs-5"> Price </span>
+          <span class="col-3 text-center fs-5"> Quantity </span>
+        </div>
+
+        <div class="row m-0 border-top">
+          <span class="col-5">
+            <span class="col-12 row py-2">
+              <div class="col-lg-6">
+                <img
+                  src="https://store-images.s-microsoft.com/image/apps.47890.14595554922816019.13efe6e8-ecc1-4d7d-95f8-56ec07d2ff6a.119cf61c-4514-4fa3-a503-8f973e85e7ac?mode=scale&q=90&h=300&w=200&background=%23FFFFFF"
+                  class="col-12 rounded mw-100 mh-100"
+                  style="width: 220px; height: 260px"
+                />
+              </div>
+              <div class="col-lg-6 ps-0 d-flex flex-column">
+                <span class="align-top fs-4 text-black">Sniper Elite 5</span>
+                <span class="align-top fs-6text-secondary mw-100"
+                  >Rebellion Developments</span
+                >
+              </div>
+            </span>
+          </span>
+
+          <span class="col-3 text-center py-4 fs-6"> $40.00 </span>
+          <span class="col-3 text-center py-4 fs-6"> 1 </span>
+          <span class="col-1 text-center py-4 fs-6">
+            <button
+              onclick="sumarAlcarrito('Sniper Elite 5')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-plus"></span>
+            </button>
+            <button
+              onclick="quitarDelcarrito('Sniper Elite 5')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-trash"></span>
+            </button>
+          </span>
+        </div>
+
+        <div class="row m-0 border-top">
+          <span class="col-5">
+            <span class="col-12 row py-2">
+              <div class="col-lg-6">
+                <img
+                  src="https://m.media-amazon.com/images/I/61Kda+eUmlL._SL1000_.jpg"
+                  class="col-12 rounded mw-100 mh-100"
+                  style="width: 220px; height: 260px"
+                />
+              </div>
+              <div class="col-lg-6 ps-0 d-flex flex-column">
+                <span class="align-top fs-4 text-black">Fifa 22</span>
+                <span class="align-top fs-6 text-secondary"
+                  >Electronic Arts</span
+                >
+              </div>
+            </span>
+          </span>
+
+          <span class="col-3 text-center py-4 fs-6"> $65.00 </span>
+          <span class="col-3 text-center py-4 fs-6"> 1 </span>
+          <span class="col-1 text-center py-4 fs-6">
+            <button
+              onclick="sumarAlcarrito('Fifa 22')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-plus"></span>
+            </button>
+            <button
+              onclick="quitarDelcarrito('Fifa 22')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-trash"></span>
+            </button>
+          </span>
+        </div>
+
+        <div class="row m-0 border-top">
+          <span class="col-5">
+            <span class="col-12 row py-2">
+              <div class="col-lg-6">
+                <img
+                  src="https://www.almadigitales.net/wp-content/uploads/2021/12/logitech-g923-racing-wheel-and-pedals-assetto-corsa-competizione-ps4-games-bundle.jpg"
+                  class="col-12 rounded mw-100 mh-100"
+                  style="width: 220px; height: 260px"
+                />
+              </div>
+              <div class="col-lg-6 ps-0 d-flex flex-column">
+                <span class="align-top fs-4 text-black"
+                  >Assetto Corsa Competizione
+                </span>
+                <span class="align-top fs-6 text-secondary"
+                  >Kunos Simulazioni</span
+                >
+              </div>
+            </span>
+          </span>
+
+          <span class="col-3 text-center py-4 fs-6"> $32.00 </span>
+          <span class="col-3 text-center py-4 fs-6"> 1 </span>
+          <span class="col-1 text-center py-4 fs-6">
+            <button
+              onclick="sumarAlcarrito('Assetto Corsa Competizione')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-plus"></span>
+            </button>
+            <button
+              onclick="quitarDelcarrito('Assetto Corsa Competizione')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-trash"></span>
+            </button>
+          </span>
+        </div>
+
+        <div class="row m-0 border-top">
+          <span class="col-5">
+            <span class="col-12 row py-2">
+              <div class="col-lg-6">
+                <img
+                  src="https://store-images.s-microsoft.com/image/apps.14694.70143269474194625.34cbed60-6333-4a42-8ea0-c20f5ac7373a.b931a0ac-1e27-4a23-b329-c621d5151355"
+                  class="col-12 rounded mw-100 mh-100"
+                  style="width: 220px; height: 260px"
+                />
+              </div>
+              <div class="col-lg-6 ps-0 d-flex flex-column">
+                <span class="align-top fs-4 text-black">Fallout 76 </span>
+                <span class="align-top fs-6 text-secondary"
+                  >Bethesda Softworks</span
+                >
+              </div>
+            </span>
+          </span>
+
+          <span class="col-3 text-center py-4 fs-6"> $15.00 </span>
+          <span class="col-3 text-center py-4 fs-6"> 1 </span>
+          <span class="col-1 text-center py-4 fs-6">
+            <button
+              onclick="sumarAlcarrito('Fallout 76')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-plus"></span>
+            </button>
+            <button
+              onclick="quitarDelcarrito('Fallout 76')"
+              class="border-0 bg-transparent"
+            >
+              <span class="jam jam-trash"></span>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="col-12 row mt-4 m-0">
+        <div class="text-end column">
+          <h5 class="fs-6 fw-light">Subtotal: $99.00</h5>
+          <h5 class="fs-6 fw-light">Iva: $20.79</h5>
+          <h5 class="fs-5 fw-semibold">Total: $119.79</h5>
+          <div class="col-12 bg-info d-flex flex-row">
+            <div class="w-50 bg-primary">
+              <form>
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  placeholder="Enter promo code"
+                />
+                <button type="submit" class="btn btn-primary rounded-0 w-100">
+                  Apply
+                </button>
+              </form>
+            </div>
+
+            <div class="w-50 bg-secondary">
+              <button
+                type="button"
+                class="btn btn-lg btn-primary rounded-0 w-100 h-100"
+                onclick="calcularTotal()"
+              >
+                Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+      crossorigin="anonymous"
+    ></script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
