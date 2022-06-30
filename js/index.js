@@ -143,6 +143,8 @@ function quitarDelcarrito(aux) {
   for (const producto of productos) {
     if (producto.nombre == productoAbuscar) {
       producto.modificarCantidad(-1);
+      sessionStorage.removeItem(producto.nombre);
+      sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
     }
   }
   contadorDeItems();
@@ -155,6 +157,7 @@ function verificarCarrito() {
     if (e.cantidad == 0) {
       const i = carrito.indexOf(e);
       carrito.splice(i, 1);
+      sessionStorage.removeItem(e.nombre);
     }
   });
 }
