@@ -224,15 +224,16 @@ function llenarContenedor() {
           </span>
           <span class="col-1 text-center py-4 fs-6">
             <button
+              onclick="sumarAlcarrito('${prod.nombre}')"
               class="border-0 bg-transparent"
               id="${prod.nombre.replace(/ /g, "") + "btnSumar"}"
-              onclick="sumarAlcarrito('${prod.nombre}')"
             >
               <span class="jam jam-plus"></span>
             </button>
             <button
               onclick="quitarDelcarrito('${prod.nombre}')"
               class="border-0 bg-transparent"
+              id="${prod.nombre.replace(/ /g, "") + "btnQuitar"}"
             >
               <span class="jam jam-trash"></span>
             </button>
@@ -273,11 +274,12 @@ function validateForm(e) {
   }
 }
 
-/* const btnsSuma = [];
+/* 
+const btnsSuma = [];
 function generarBtnsSuma() {
   productos.forEach((e) => {
-    let btn = e.nombre.replace(/ /g, "") + "btnSumar";
-    let aux = document.getElementById(btn);
+    let btnName = e.nombre.replace(/ /g, "") + "btnSumar";
+    let aux = document.getElementById(btnName);
     btnsSuma.push(aux);
   });
 
@@ -285,7 +287,29 @@ function generarBtnsSuma() {
     let btn = btnsSuma[i];
     let prod = productos[i].nombre;
 
-    btn.addEventListener('click', sumarAlcarrito(prod))
+    btn.addEventListener("click", () => {
+      sumarAlcarrito(prod);
+    });
   }
 }
-generarBtnsSuma(); */
+generarBtnsSuma();
+
+const btnsQuitar = [];
+function generarBtnsQuitar() {
+  productos.forEach((e) => {
+    let btnName = e.nombre.replace(/ /g, "") + "btnQuitar";
+    let aux = document.getElementById(btnName);
+    btnsQuitar.push(aux);
+  });
+
+  for (let i = 0; i < btnsQuitar.length; i++) {
+    let btn = btnsQuitar[i];
+    let prod = productos[i].nombre;
+
+    btn.addEventListener("click", () => {
+      quitarDelcarrito(prod);
+    });
+  }
+}
+generarBtnsQuitar(); 
+*/
