@@ -22,7 +22,7 @@ class Producto {
     this.nombre = nombre;
     this.stock = stock;
     this.cantidad = cantidad;
-    this.precio = precio;
+    this.precio = precio.toFixed(2);
     this.img = img;
   }
   precioConIVA() {
@@ -113,26 +113,62 @@ function sumarAlcarrito(aux) {
   for (const producto of productos) {
     if (producto.nombre == aux) {
       if (producto.stock <= 0) {
-        alert("No contamos con mas stock de este producto");
-        console.warn("Producto fuera de stock");
+        Swal.fire({
+          icon: "error",
+          title: "Producto fuera de stock",
+        });
       } else {
-        const rst = carrito.some((e) => e.nombre === aux);
-        if (rst == false) {
-          producto.modificarCantidad(1);
-          carrito.push(producto);
-          sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
-        } else if (rst == true) {
-          carrito.forEach((e) => {
-            if (e.nombre == producto.nombre) {
-              producto.modificarCantidad(1);
-              sessionStorage.removeItem(producto.nombre);
-              sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: "btn btn-success mx-1",
+            cancelButton: "btn btn-danger",
+          },
+          buttonsStyling: false,
+        });
+
+        swalWithBootstrapButtons
+          .fire({
+            title: "Confirmar",
+            text: "Deseas agregar este pructo al carrito?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Si, agregar!",
+            cancelButtonText: "No, cancelar!",
+            reverseButtons: true,
+          })
+          .then((result) => {
+            if (result.isConfirmed) {
+              swalWithBootstrapButtons.fire(
+                "Completado",
+                "Tu producto ha sido agregado al carrito",
+                "success"
+              );
+              const rst = carrito.some((e) => e.nombre === aux);
+              if (rst == false) {
+                producto.modificarCantidad(1);
+                carrito.push(producto);
+                sessionStorage.setItem(
+                  producto.nombre,
+                  JSON.stringify(producto)
+                );
+              } else if (rst == true) {
+                carrito.forEach((e) => {
+                  if (e.nombre == producto.nombre) {
+                    producto.modificarCantidad(1);
+                    sessionStorage.removeItem(producto.nombre);
+                    sessionStorage.setItem(
+                      producto.nombre,
+                      JSON.stringify(producto)
+                    );
+                  }
+                });
+              }
+              contadorDeItems();
+              calcularTotal();
+              llenarContenedor();
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
             }
           });
-        }
-        contadorDeItems();
-        calcularTotal();
-        llenarContenedor();
       }
     }
   }
@@ -140,16 +176,44 @@ function sumarAlcarrito(aux) {
 
 function quitarDelcarrito(aux) {
   let productoAbuscar = aux;
-  for (const producto of productos) {
-    if (producto.nombre == productoAbuscar) {
-      producto.modificarCantidad(-1);
-      sessionStorage.removeItem(producto.nombre);
-      sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
-    }
-  }
-  contadorDeItems();
-  calcularTotal();
-  llenarContenedor();
+  const swalWithBootstrapButtons = Swal.mixin({
+    customClass: {
+      confirmButton: "btn btn-danger mx-1",
+      cancelButton: "btn btn-success",
+    },
+    buttonsStyling: false,
+  });
+
+  swalWithBootstrapButtons
+    .fire({
+      title: "Confirmar",
+      text: "Estas seguro que deseas eliminar este producto?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Si, eliminar!",
+      cancelButtonText: "No, cancelar!",
+      reverseButtons: true,
+    })
+    .then((result) => {
+      if (result.isConfirmed) {
+        swalWithBootstrapButtons.fire(
+          "Completado",
+          "Tu producto ha sido eliminado del carrito",
+          "success"
+        );
+        for (const producto of productos) {
+          if (producto.nombre == productoAbuscar) {
+            producto.modificarCantidad(-1);
+            sessionStorage.removeItem(producto.nombre);
+            sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
+          }
+        }
+        contadorDeItems();
+        calcularTotal();
+        llenarContenedor();
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+      }
+    });
 }
 
 function verificarCarrito() {
@@ -185,6 +249,14 @@ function calcularCarrito() {
     }
   }
   console.table(productosEnCarrito);
+}
+
+function checkOut() {
+  Swal.fire({
+    icon: "success",
+    title: "Compra completada",
+    text: "El total del carrito es $" + totalCarrito * 1.21,
+  });
 }
 
 function randomStock() {
@@ -261,8 +333,13 @@ contadorDeItems();
 promoForm.addEventListener("submit", validateForm);
 function validateForm(e) {
   e.preventDefault();
-  if (promoCode.value == "code" && promoActive == false) {
+  if (promoCode.value == "supercode" && promoActive == false) {
     promoActive = true;
+    Swal.fire({
+      icon: "success",
+      title: "Codigo correcto",
+      text: "20% en toda la web!",
+    });
     for (producto of productos) {
       producto.precio = (producto.precio * 0.8).toFixed(2);
     }
@@ -271,6 +348,12 @@ function validateForm(e) {
     for (let i = 0; i < promosPrice.length; i++) {
       promosPrice[i].classList.add("text-danger");
     }
+  } else {
+    Swal.fire({
+      icon: "error",
+      title: "Codigo incorrecto",
+      text: "Ese codigo es incorrecto o ya ha sido utilizado por otro usuario",
+    });
   }
 }
 
