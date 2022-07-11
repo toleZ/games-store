@@ -176,44 +176,50 @@ function sumarAlcarrito(aux) {
 
 function quitarDelcarrito(aux) {
   let productoAbuscar = aux;
-  const swalWithBootstrapButtons = Swal.mixin({
-    customClass: {
-      confirmButton: "btn btn-danger mx-1",
-      cancelButton: "btn btn-success",
-    },
-    buttonsStyling: false,
-  });
 
-  swalWithBootstrapButtons
-    .fire({
-      title: "Confirmar",
-      text: "Estas seguro que deseas eliminar este producto?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Si, eliminar!",
-      cancelButtonText: "No, cancelar!",
-      reverseButtons: true,
-    })
-    .then((result) => {
-      if (result.isConfirmed) {
-        swalWithBootstrapButtons.fire(
-          "Completado",
-          "Tu producto ha sido eliminado del carrito",
-          "success"
-        );
-        for (const producto of productos) {
-          if (producto.nombre == productoAbuscar) {
+  for (const producto of productos) {
+    if (producto.nombre == productoAbuscar && producto.cantidad > 0) {
+      const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: "btn btn-danger mx-1",
+          cancelButton: "btn btn-success",
+        },
+        buttonsStyling: false,
+      });
+
+      swalWithBootstrapButtons
+        .fire({
+          title: "Confirmar",
+          text: "Estas seguro que deseas eliminar este producto?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Si, eliminar!",
+          cancelButtonText: "No, cancelar!",
+          reverseButtons: true,
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            swalWithBootstrapButtons.fire(
+              "Completado",
+              "Tu producto ha sido eliminado del carrito",
+              "success"
+            );
             producto.modificarCantidad(-1);
             sessionStorage.removeItem(producto.nombre);
             sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
+            contadorDeItems();
+            calcularTotal();
+            llenarContenedor();
           }
-        }
-        contadorDeItems();
-        calcularTotal();
-        llenarContenedor();
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
-      }
-    });
+        });
+    } else if (producto.nombre == productoAbuscar && producto.cantidad <= 0) {
+      Swal.fire(
+        "Error",
+        "No tienes agregado este producto en tu carrito",
+        "error"
+      );
+    }
+  }
 }
 
 function verificarCarrito() {
@@ -361,6 +367,8 @@ function llenarContenedor() {
       }
     }
   }
+  generarBtnsSuma();
+  generarBtnsQuitar();
 }
 llenarContenedor();
 
@@ -403,8 +411,9 @@ function validateForm(e) {
 let checkOutBtn = document.querySelector("#checkOutBtn");
 checkOutBtn.addEventListener("click", checkOut);
 
-const btnsSuma = [];
 function generarBtnsSuma() {
+  const btnsSuma = [];
+
   productos.forEach((e) => {
     let btnName = e.nombre.replace(/ /g, "") + "btnSumar";
     let aux = document.getElementById(btnName);
@@ -414,18 +423,19 @@ function generarBtnsSuma() {
   for (let i = 0; i < btnsSuma.length; i++) {
     let btn = btnsSuma[i];
     let prod = productos[i].nombre;
-    let f = sumarAlcarrito(prod);
-    function j() {
-      f;
-    }
 
-    btn.addEventListener("click", j);
+    btn.addEventListener(
+      "click",
+      () => {
+        sumarAlcarrito(prod);
+      },
+      false
+    );
   }
 }
-generarBtnsSuma();
 
-/* const btnsQuitar = [];
 function generarBtnsQuitar() {
+  const btnsQuitar = [];
   productos.forEach((e) => {
     let btnName = e.nombre.replace(/ /g, "") + "btnQuitar";
     let aux = document.getElementById(btnName);
@@ -441,4 +451,3 @@ function generarBtnsQuitar() {
     });
   }
 }
-generarBtnsQuitar();  */
