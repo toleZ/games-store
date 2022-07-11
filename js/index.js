@@ -130,7 +130,7 @@ function sumarAlcarrito(aux) {
           .fire({
             title: "Confirmar",
             text: "Deseas agregar este pructo al carrito?",
-            icon: "warning",
+            icon: "question",
             showCancelButton: true,
             confirmButtonText: "Si, agregar!",
             cancelButtonText: "No, cancelar!",
@@ -251,12 +251,55 @@ function calcularCarrito() {
   console.table(productosEnCarrito);
 }
 
-function checkOut() {
-  Swal.fire({
-    icon: "success",
-    title: "Compra completada",
-    text: "El total del carrito es $" + totalCarrito * 1.21,
+function vaciarCarrito() {
+  for (let i = 0; i < carrito.length; i++) {
+    carrito.pop();
+  }
+  productos.forEach((e) => {
+    e.cantidad = 0;
   });
+  contadorDeItems();
+  calcularTotal();
+  llenarContenedor();
+}
+
+function checkOut() {
+  if (totalCarrito > 0) {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success mx-1",
+        cancelButton: "btn btn-danger",
+      },
+      buttonsStyling: false,
+    });
+
+    swalWithBootstrapButtons
+      .fire({
+        title: "Confirmar compra",
+        text: "El total del carrito es $" + (totalCarrito * 1.21).toFixed(2),
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire(
+            "Compra completada!",
+            "Revisa tu email para ver la factura completa",
+            "success"
+          );
+          vaciarCarrito();
+        }
+      });
+  } else {
+    Swal.fire(
+      "El carrito esta vacio",
+      "Debe haber minimo 1 producto en el carrito",
+      "error"
+    );
+  }
 }
 
 function randomStock() {
@@ -296,7 +339,7 @@ function llenarContenedor() {
           </span>
           <span class="col-1 text-center py-4 fs-6">
             <button
-              onclick="sumarAlcarrito('${prod.nombre}')"
+
               class="border-0 bg-transparent"
               id="${prod.nombre.replace(/ /g, "") + "btnSumar"}"
             >
@@ -357,7 +400,9 @@ function validateForm(e) {
   }
 }
 
-/* 
+let checkOutBtn = document.querySelector("#checkOutBtn");
+checkOutBtn.addEventListener("click", checkOut);
+
 const btnsSuma = [];
 function generarBtnsSuma() {
   productos.forEach((e) => {
@@ -369,15 +414,17 @@ function generarBtnsSuma() {
   for (let i = 0; i < btnsSuma.length; i++) {
     let btn = btnsSuma[i];
     let prod = productos[i].nombre;
+    let f = sumarAlcarrito(prod);
+    function j() {
+      f;
+    }
 
-    btn.addEventListener("click", () => {
-      sumarAlcarrito(prod);
-    });
+    btn.addEventListener("click", j);
   }
 }
 generarBtnsSuma();
 
-const btnsQuitar = [];
+/* const btnsQuitar = [];
 function generarBtnsQuitar() {
   productos.forEach((e) => {
     let btnName = e.nombre.replace(/ /g, "") + "btnQuitar";
@@ -394,5 +441,4 @@ function generarBtnsQuitar() {
     });
   }
 }
-generarBtnsQuitar(); 
-*/
+generarBtnsQuitar();  */
