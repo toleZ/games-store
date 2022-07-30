@@ -14,7 +14,6 @@ const itemsCounter = document.getElementById("itemsCounter");
 const promoForm = document.getElementById("promoForm");
 const promoCode = document.getElementById("promoCode");
 const applyBtn = document.getElementById("applyBtn");
-
 const promosPrice = document.getElementsByClassName("promoClass");
 
 class Producto {
@@ -83,6 +82,94 @@ productos.push(
   )
 );
 
+const jsonProds = () => {
+  fetch('./js/juegos.json')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(e => {
+        productos.push(new Producto(e.nombre, randomStock(), 0, e.precio, e.img))
+      })
+    })
+}
+document.addEventListener("load", jsonProds())
+
+const loginAlert = (user) => {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 1500,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener("mouseenter", Swal.stopTimer);
+      toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+  });
+
+  fetch(`//api.github.com/users/${user.login}`)
+    .then(response => response.json())
+    .then(data => {
+      if(!data.avatar_url){
+        Toast.fire({
+          icon: "success",
+          title: `Bienvenido <span class="text-primary">${user.login}</span>`,
+        });
+      } else {
+        Toast.fire({
+          icon: "success",
+          title: `Bienvenido <span class="text-primary">${user.login}</span><img src="${data.avatar_url}" class="mx-1" style="width: 25px; height: 25px;">`,
+        });
+      }
+    })
+    .catch(error => console.log(error))
+}
+
+const login = () => {
+  Swal.fire({
+    title: "Iniciar sesion",
+    html: `<input type="email" id="login" class="swal2-input" placeholder="Email">
+  <input type="password" id="password" class="swal2-input" placeholder="Contraseña">`,
+    confirmButtonText: "Ingresar",
+    focusConfirm: false,
+    allowOutsideClick: false,
+    preConfirm: () => {
+      const login = Swal.getPopup().querySelector("#login").value;
+      const password = Swal.getPopup().querySelector("#password").value;
+      if (!login || !password) {
+        Swal.showValidationMessage(
+          `Porfavor ingrese un nombre y contraseña validos`
+        );
+      }
+      return { login: login, password: password };
+    },
+  }).then((result) => {
+    const user = {
+      login: result.value.login,
+      password: result.value.password,
+    };
+    let str = JSON.stringify(user);
+    localStorage.setItem("user", str);
+
+    loginAlert(user)
+  });
+}
+
+const singOut = () => {
+  localStorage.removeItem('user')
+  location.reload()
+}
+
+const loginConfirm = () => {
+  const user = JSON.parse(localStorage.getItem('user'))
+  
+  if(!user){
+    login()
+  } else {
+    loginAlert(user)
+  }
+}
+document.addEventListener("load", loginConfirm())
+
 function listarProductos() {
   console.clear();
   console.table(productos);
@@ -112,10 +199,10 @@ function buscarProducto() {
 function sumarAlcarrito(aux) {
   for (const producto of productos) {
     if (producto.nombre == aux) {
-      if (producto.stock <= 0) {
+      if (producto.stock <= 0 || producto.cantidad == producto.stock) {
         Swal.fire({
           icon: "error",
-          title: "Producto fuera de stock",
+          title: "No contamos con mas unidades de este producto",
         });
       } else {
         const swalWithBootstrapButtons = Swal.mixin({
@@ -138,28 +225,33 @@ function sumarAlcarrito(aux) {
           })
           .then((result) => {
             if (result.isConfirmed) {
-              swalWithBootstrapButtons.fire(
-                "Completado",
-                "Tu producto ha sido agregado al carrito",
-                "success"
-              );
+              const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener("mouseenter", Swal.stopTimer);
+                  toast.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+              });
+
+              Toast.fire({
+                icon: "success",
+                title: `<span class="text-success">${producto.nombre}</span> se ha agregado al carrito`,
+              });
               const rst = carrito.some((e) => e.nombre === aux);
               if (rst == false) {
                 producto.modificarCantidad(1);
                 carrito.push(producto);
-                sessionStorage.setItem(
-                  producto.nombre,
-                  JSON.stringify(producto)
-                );
+                sessionStorage.setItem("carrito", JSON.stringify(carrito));
               } else if (rst == true) {
                 carrito.forEach((e) => {
                   if (e.nombre == producto.nombre) {
                     producto.modificarCantidad(1);
-                    sessionStorage.removeItem(producto.nombre);
-                    sessionStorage.setItem(
-                      producto.nombre,
-                      JSON.stringify(producto)
-                    );
+                    sessionStorage.removeItem(carrito);
+                    sessionStorage.setItem("carrito", JSON.stringify(carrito));
                   }
                 });
               }
@@ -199,14 +291,25 @@ function quitarDelcarrito(aux) {
         })
         .then((result) => {
           if (result.isConfirmed) {
-            swalWithBootstrapButtons.fire(
-              "Completado",
-              "Tu producto ha sido eliminado del carrito",
-              "success"
-            );
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+              },
+            });
+
+            Toast.fire({
+              icon: "success",
+              title: `<span class="text-danger">${producto.nombre}</span> se ha eliminado del carrito`,
+            });
             producto.modificarCantidad(-1);
-            sessionStorage.removeItem(producto.nombre);
-            sessionStorage.setItem(producto.nombre, JSON.stringify(producto));
+            sessionStorage.removeItem(carrito);
+            sessionStorage.setItem("carrito", JSON.stringify(carrito));
             contadorDeItems();
             calcularTotal();
             llenarContenedor();
@@ -269,6 +372,45 @@ function vaciarCarrito() {
   llenarContenedor();
 }
 
+const randomKey = () => {
+  return (Math.random() + 1).toString(36).substring(7)
+}
+
+const keys = () => {
+  carrito.forEach(e => {
+      e.key = randomKey()
+  })
+}
+
+const generarFactura = () => {
+  keys()
+  let factura = document.createElement('div')
+  factura.innerHTML = "";
+  for (prod of carrito) {
+  let row = document.createElement("div");
+  row.innerHTML = `
+      <div class="row mx-0 my-2 py-2 border-3 border-bottom">
+          <span class="col-6">
+              <img src="${prod.img}" class="col-12 rounded"/>
+          </span>
+          <span class="col-6 align-center">
+              <span class="col-12 align-center fs-4 text-black">${prod.nombre}</span>
+              <br>
+              <span class="col-12 fs-4">Key: ${prod.key}</span>
+          </span>
+      </div>
+  `;
+  factura.append(row);
+  }
+  Swal.fire({
+      title: 'Compra completa con exito!',
+      html: factura,
+      showCloseButton: true,
+      showConfirmButton: false,
+      didClose: () => {location.reload()}
+  })
+}
+
 function checkOut() {
   if (totalCarrito > 0) {
     const swalWithBootstrapButtons = Swal.mixin({
@@ -281,7 +423,7 @@ function checkOut() {
 
     swalWithBootstrapButtons
       .fire({
-        title: "Confirmar compra",
+        title: "Confirmar compra 🛒",
         text: "El total del carrito es $" + (totalCarrito * 1.21).toFixed(2),
         icon: "warning",
         showCancelButton: true,
@@ -291,12 +433,31 @@ function checkOut() {
       })
       .then((result) => {
         if (result.isConfirmed) {
-          swalWithBootstrapButtons.fire(
-            "Compra completada!",
-            "Revisa tu email para ver la factura completa",
-            "success"
-          );
-          vaciarCarrito();
+          setTimeout(() => {
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener("mouseenter", Swal.stopTimer);
+                toast.addEventListener("mouseleave", Swal.resumeTimer);
+              },
+            });
+
+            Toast.fire({
+              icon: "success",
+              title: "Compra completada con exito",
+            });
+            generarFactura()
+          }, 3000);
+          Swal.fire({
+            title: preLoader(),
+            text: "Completando compra...",
+            showConfirmButton: false,
+            allowOutsideClick: false,
+          });
         }
       });
   } else {
@@ -370,14 +531,10 @@ function llenarContenedor() {
   generarBtnsSuma();
   generarBtnsQuitar();
 }
-llenarContenedor();
+setTimeout(() => llenarContenedor(), 100)
 
 function contadorDeItems() {
-  let i = 0;
-  carrito.forEach((e) => {
-    i = i + e.cantidad;
-  });
-  itemsCounter.innerText = i;
+  itemsCounter.innerText = carrito.length;
 }
 contadorDeItems();
 
@@ -391,6 +548,7 @@ function validateForm(e) {
       title: "Codigo correcto",
       text: "20% en toda la web!",
     });
+    promoCode.value = "";
     for (producto of productos) {
       producto.precio = (producto.precio * 0.8).toFixed(2);
     }
@@ -408,8 +566,11 @@ function validateForm(e) {
   }
 }
 
-let checkOutBtn = document.querySelector("#checkOutBtn");
-checkOutBtn.addEventListener("click", checkOut);
+function generarBtnsCheckOut() {
+  let checkOutBtn = document.querySelector("#checkOutBtn");
+  checkOutBtn.addEventListener("click", checkOut);
+}
+document.addEventListener("load", generarBtnsCheckOut());
 
 function generarBtnsSuma() {
   const btnsSuma = [];
@@ -451,3 +612,11 @@ function generarBtnsQuitar() {
     });
   }
 }
+
+function preLoader() {
+  return `
+  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+  </div>
+`;
+}
+
