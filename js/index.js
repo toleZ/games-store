@@ -626,10 +626,10 @@ const prodPriceOrder = () => {
     prodPriceArrow.classList = "jam jam-arrow-down"
     prodNameArrow.classList = "jam jam-arrow-up"
     productosOrdenados = productos.sort((a, b) => {
-      if(a.precio < b.precio){
+      if(a.precio > b.precio){
         return 1
       }
-      if(a.precio > b.precio){
+      if(a.precio < b.precio){
         return -1
       }
       return 0
@@ -637,10 +637,10 @@ const prodPriceOrder = () => {
   } else if (prodPriceArrow.classList == "jam jam-arrow-down"){
     prodPriceArrow.classList = "jam jam-arrow-up"
     productosOrdenados = productos.sort((a, b) => {
-      if(a.precio < b.precio){
+      if(a.precio > b.precio){
         return -1
       }
-      if(a.precio > b.precio){
+      if(a.precio < b.precio){
         return 1
       }
       return 0
