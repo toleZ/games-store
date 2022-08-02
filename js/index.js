@@ -17,6 +17,10 @@ const applyBtn = document.getElementById("applyBtn");
 const promosPrice = document.getElementsByClassName("promoClass");
 const searchInput = document.querySelector('#searchInput')
 const searchForm = document.querySelector('#searchForm')
+const prodName = document.querySelector('#prodName')
+const prodPrice = document.querySelector('#prodPrice')
+const prodNameArrow = document.querySelector('#prodNameArrow')
+const prodPriceArrow = document.querySelector('#prodPriceArrow')
 
 class Producto {
   constructor(nombre, stock, cantidad, precio, img) {
@@ -47,9 +51,9 @@ class Producto {
   }
 }
 
-const llenarContenedor = () => {
+const llenarContenedor = (arr) => {
   productsContainer.innerHTML = "";
-  for (prod of productos) {
+  for (prod of arr) {
     let row = document.createElement("div");
     row.innerHTML = `<div class="row m-0 border-top">
           <span class="col-5">
@@ -102,8 +106,8 @@ const llenarContenedor = () => {
       }
     }
   }
-  generarBtnsSuma(productos);
-  generarBtnsQuitar(productos);
+  generarBtnsSuma(arr);
+  generarBtnsQuitar(arr);
 }
 
 const getProds = () => {
@@ -119,7 +123,7 @@ const getProds = () => {
     })
     .catch(error => console.log(error))
     .finally(() => {
-      llenarContenedor()
+      llenarContenedor(productos)
     })
 }
 document.addEventListener("load", getProds())
@@ -133,7 +137,7 @@ const postProd = (prod) => {
     }
   })
     .then(response => console.log(response.json))
-    .finally(() => llenarContenedor())
+    .finally(() => llenarContenedor(productos))
 }
 
 const loginAlert = async (user) => {
@@ -227,61 +231,10 @@ const buscarProducto = (e) => {
 
   const productosEncontrados = productos.filter(e => e.nombre.includes(searchInput.value))
 
-  if(searchInput.value != ''){
-    productsContainer.innerHTML = ''
-
-  productosEncontrados.forEach (prod => {
-    let row = document.createElement("div");
-    row.innerHTML = `<div class="row m-0 border-top">
-          <span class="col-5">
-            <span class="col-12 row py-2">
-              <div class="col-lg-6">
-                <img
-                  src="${prod.img}"
-                  class="col-12 rounded mw-100 mh-100"
-                  style="width: 220px; height: 260px"
-                />
-              </div>
-              <div class="col-lg-6 ps-lg-0 ps-md-3 d-flex flex-column">
-                <span class="align-top fs-4 text-black">${prod.nombre}</span>
-                <span class="align-top fs-6text-secondary mw-100"
-                  >PS4</span
-                >
-              </div>
-            </span>
-          </span>
-
-          <span class="col-3 text-center py-4 fs-6 promoClass"> $ ${
-            prod.precio
-          }  </span>
-          <span class="col-3 text-center py-4 fs-6">
-            <span>${prod.cantidad}<span class="mx-3">/</span>${
-      prod.stock
-    }</span>
-          </span>
-          <span class="col-1 text-center py-4 fs-6">
-            <button
-
-              class="border-0 bg-transparent"
-              id="${prod.nombre.replace(/ /g, "") + "btnSumar"}"
-            >
-              <span class="jam jam-plus"></span>
-            </button>
-            <button
-              onclick="quitarDelcarrito('${prod.nombre}')"
-              class="border-0 bg-transparent"
-              id="${prod.nombre.replace(/ /g, "") + "btnQuitar"}"
-            >
-              <span class="jam jam-trash"></span>
-            </button>
-          </span>
-        </div>`;
-    productsContainer.append(row);
-    generarBtnsSuma(productosEncontrados);
-    generarBtnsQuitar(productosEncontrados);
-  })
+  if(searchInput.value != ''){ 
+  llenarContenedor(productosEncontrados)
   } else{
-    llenarContenedor()
+    llenarContenedor(productos)
   }
 }
 searchForm.addEventListener('submit', buscarProducto)
@@ -361,7 +314,7 @@ function sumarAlcarrito(aux) {
               }
               contadorDeItems();
               calcularTotal();
-              llenarContenedor();
+              llenarContenedor(productos);
             } else if (result.dismiss === Swal.DismissReason.cancel) {
             }
           });
@@ -416,7 +369,7 @@ function quitarDelcarrito(aux) {
             sessionStorage.setItem("carrito", JSON.stringify(carrito));
             contadorDeItems();
             calcularTotal();
-            llenarContenedor();
+            llenarContenedor(productos);
           }
         });
     } else if (producto.nombre == productoAbuscar && producto.cantidad <= 0) {
@@ -570,7 +523,7 @@ function validateForm(e) {
       producto.precio = (producto.precio * 0.8).toFixed(2);
     }
     calcularTotal();
-    llenarContenedor();
+    llenarContenedor(productos);
     for (let i = 0; i < promosPrice.length; i++) {
       promosPrice[i].classList.add("text-danger");
     }
@@ -636,3 +589,63 @@ function preLoader() {
   </div>
 `;
 }
+
+const prodNameOrder = () => {
+  if(prodNameArrow.classList == "jam jam-arrow-up"){
+    prodNameArrow.classList = "jam jam-arrow-down"
+    prodPriceArrow.classList = "jam jam-arrow-up"
+    productosOrdenados = productos.sort((a, b) => {
+      if(a.nombre < b.nombre){
+        return 1
+      }
+      if(a.nombre > b.nombre){
+        return -1
+      }
+      return 0
+    })
+    llenarContenedor(productosOrdenados)
+  } else if(prodNameArrow.classList == "jam jam-arrow-down"){
+    prodNameArrow.classList = "jam jam-arrow-up"
+    productosOrdenados = productos.sort((a, b) => {
+      if(a.nombre < b.nombre){
+        return -1
+      }
+      if(a.nombre > b.nombre){
+        return 1
+      }
+      return 0
+    })
+    llenarContenedor(productosOrdenados)
+  }
+  
+}
+prodName.addEventListener('click', prodNameOrder)
+
+const prodPriceOrder = () => {
+  if(prodPriceArrow.classList == "jam jam-arrow-up"){
+    prodPriceArrow.classList = "jam jam-arrow-down"
+    prodNameArrow.classList = "jam jam-arrow-up"
+    productosOrdenados = productos.sort((a, b) => {
+      if(a.precio < b.precio){
+        return 1
+      }
+      if(a.precio > b.precio){
+        return -1
+      }
+      return 0
+    })
+  } else if (prodPriceArrow.classList == "jam jam-arrow-down"){
+    prodPriceArrow.classList = "jam jam-arrow-up"
+    productosOrdenados = productos.sort((a, b) => {
+      if(a.precio < b.precio){
+        return -1
+      }
+      if(a.precio > b.precio){
+        return 1
+      }
+      return 0
+    })
+  }
+  llenarContenedor(productosOrdenados)
+}
+prodPrice.addEventListener('click', prodPriceOrder)
