@@ -55,6 +55,7 @@ const llenarContenedor = (arr) => {
   productsContainer.innerHTML = "";
   for (prod of arr) {
     let row = document.createElement("div");
+    row.id = `${prod.nombre.replace(/ /g, "") + "container"}`
     row.innerHTML = `<div class="row m-0 border-top">
           <span class="col-5">
             <span class="col-12 row py-2">
@@ -108,6 +109,7 @@ const llenarContenedor = (arr) => {
   }
   generarBtnsSuma(arr);
   generarBtnsQuitar(arr);
+  generarHovers(arr)
 }
 
 const getProds = () => {
@@ -649,3 +651,12 @@ const prodPriceOrder = () => {
   llenarContenedor(productosOrdenados)
 }
 prodPrice.addEventListener('click', prodPriceOrder)
+
+const generarHovers = (arr) => {
+  arr.forEach(e => {
+    let prodContainerId = e.nombre.replace(/ /g, "") + "container";
+    let prod = document.getElementById(prodContainerId)
+    prod.addEventListener('mouseover',() => {prod.classList.add("border-2", "border-start", "border-end", "border-info")})
+    prod.addEventListener('mouseout',() => {prod.classList.remove("border-2", "border-start", "border-end", "border-info")})
+  })
+}
