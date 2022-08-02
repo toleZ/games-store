@@ -15,6 +15,8 @@ const promoForm = document.getElementById("promoForm");
 const promoCode = document.getElementById("promoCode");
 const applyBtn = document.getElementById("applyBtn");
 const promosPrice = document.getElementsByClassName("promoClass");
+const searchInput = document.querySelector('#searchInput')
+const searchForm = document.querySelector('#searchForm')
 
 class Producto {
   constructor(nombre, stock, cantidad, precio, img) {
@@ -100,8 +102,8 @@ const llenarContenedor = () => {
       }
     }
   }
-  generarBtnsSuma();
-  generarBtnsQuitar();
+  generarBtnsSuma(productos);
+  generarBtnsQuitar(productos);
 }
 
 const getProds = () => {
@@ -220,6 +222,70 @@ function listarProductos() {
   console.table(productos);
 }
 
+const buscarProducto = (e) => {
+  e.preventDefault()
+
+  const productosEncontrados = productos.filter(e => e.nombre.includes(searchInput.value))
+
+  if(searchInput.value != ''){
+    productsContainer.innerHTML = ''
+
+  productosEncontrados.forEach (prod => {
+    let row = document.createElement("div");
+    row.innerHTML = `<div class="row m-0 border-top">
+          <span class="col-5">
+            <span class="col-12 row py-2">
+              <div class="col-lg-6">
+                <img
+                  src="${prod.img}"
+                  class="col-12 rounded mw-100 mh-100"
+                  style="width: 220px; height: 260px"
+                />
+              </div>
+              <div class="col-lg-6 ps-lg-0 ps-md-3 d-flex flex-column">
+                <span class="align-top fs-4 text-black">${prod.nombre}</span>
+                <span class="align-top fs-6text-secondary mw-100"
+                  >PS4</span
+                >
+              </div>
+            </span>
+          </span>
+
+          <span class="col-3 text-center py-4 fs-6 promoClass"> $ ${
+            prod.precio
+          }  </span>
+          <span class="col-3 text-center py-4 fs-6">
+            <span>${prod.cantidad}<span class="mx-3">/</span>${
+      prod.stock
+    }</span>
+          </span>
+          <span class="col-1 text-center py-4 fs-6">
+            <button
+
+              class="border-0 bg-transparent"
+              id="${prod.nombre.replace(/ /g, "") + "btnSumar"}"
+            >
+              <span class="jam jam-plus"></span>
+            </button>
+            <button
+              onclick="quitarDelcarrito('${prod.nombre}')"
+              class="border-0 bg-transparent"
+              id="${prod.nombre.replace(/ /g, "") + "btnQuitar"}"
+            >
+              <span class="jam jam-trash"></span>
+            </button>
+          </span>
+        </div>`;
+    productsContainer.append(row);
+    generarBtnsSuma(productosEncontrados);
+    generarBtnsQuitar(productosEncontrados);
+  })
+  } else{
+    llenarContenedor()
+  }
+}
+searchForm.addEventListener('submit', buscarProducto)
+
 function agregarProducto() {
   let stock = randomStock();
   let nombre = prompt("Ingresa el nombre del producto");
@@ -232,16 +298,6 @@ function agregarProducto() {
   }
   productos.push(new Producto(nombre, stock, 0, precio, img));
   postProd(prod)
-}
-
-function buscarProducto() {
-  let productoAbuscar = prompt("Ingrese el producto");
-  for (const producto of productos) {
-    if (producto.nombre == productoAbuscar) {
-      console.log("Producto encontrado");
-      break;
-    }
-  }
 }
 
 function sumarAlcarrito(aux) {
@@ -533,10 +589,10 @@ function generarBtnsCheckOut() {
 }
 document.addEventListener("load", generarBtnsCheckOut());
 
-function generarBtnsSuma() {
+function generarBtnsSuma(arr) {
   const btnsSuma = [];
 
-  productos.forEach((e) => {
+  arr.forEach((e) => {
     let btnName = e.nombre.replace(/ /g, "") + "btnSumar";
     let aux = document.getElementById(btnName);
     btnsSuma.push(aux);
@@ -544,7 +600,7 @@ function generarBtnsSuma() {
 
   for (let i = 0; i < btnsSuma.length; i++) {
     let btn = btnsSuma[i];
-    let prod = productos[i].nombre;
+    let prod = arr[i].nombre;
 
     btn.addEventListener(
       "click",
@@ -556,9 +612,9 @@ function generarBtnsSuma() {
   }
 }
 
-function generarBtnsQuitar() {
+function generarBtnsQuitar(arr) {
   const btnsQuitar = [];
-  productos.forEach((e) => {
+  arr.forEach((e) => {
     let btnName = e.nombre.replace(/ /g, "") + "btnQuitar";
     let aux = document.getElementById(btnName);
     btnsQuitar.push(aux);
@@ -566,7 +622,7 @@ function generarBtnsQuitar() {
 
   for (let i = 0; i < btnsQuitar.length; i++) {
     let btn = btnsQuitar[i];
-    let prod = productos[i].nombre;
+    let prod = arr[i].nombre;
 
     btn.addEventListener("click", () => {
       quitarDelcarrito(prod);
