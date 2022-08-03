@@ -233,9 +233,13 @@ function listarProductos() {
 const buscarProducto = (e) => {
   e.preventDefault()
 
-  const productosEncontrados = productos.filter(e => e.nombre.includes(searchInput.value))
+  const productosEncontrados = productos.filter(ele => ele.nombre.toLowerCase().includes(searchInput.value.toLowerCase()))
 
-  if(searchInput.value != '' ? llenarContenedor(productosEncontrados) : llenarContenedor(productos)){}
+  if(searchInput.value != ''){
+    llenarContenedor(productosEncontrados)
+  } else {
+    llenarContenedor(productos)
+  }
 }
 searchForm.addEventListener('submit', buscarProducto)
 
