@@ -21,6 +21,7 @@ const prodName = document.querySelector('#prodName')
 const prodPrice = document.querySelector('#prodPrice')
 const prodNameArrow = document.querySelector('#prodNameArrow')
 const prodPriceArrow = document.querySelector('#prodPriceArrow')
+const singOutBtn = document.querySelector('#singOutBtn')
 
 class Producto {
   constructor(nombre, stock, cantidad, precio, img) {
@@ -211,6 +212,7 @@ const singOut = () => {
   localStorage.removeItem('user')
   location.reload()
 }
+singOutBtn.addEventListener('click', singOut)
 
 const loginConfirm = () => {
   const user = JSON.parse(localStorage.getItem('user'))
