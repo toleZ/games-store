@@ -4,7 +4,7 @@ const IVA = 1.21;
 let totalCarrito = 0;
 let promoActive = false;
 
-sessionStorage.clear();
+sessionStorage.clear(); //Lo utilizo para borrar el dato que almacena LiveServer
 
 const totalSpan = document.getElementById("totalSpan");
 const ivaSpan = document.getElementById("ivaSpan");
@@ -235,11 +235,7 @@ const buscarProducto = (e) => {
 
   const productosEncontrados = productos.filter(e => e.nombre.includes(searchInput.value))
 
-  if(searchInput.value != ''){ 
-  llenarContenedor(productosEncontrados)
-  } else{
-    llenarContenedor(productos)
-  }
+  if(searchInput.value != '' ? llenarContenedor(productosEncontrados) : llenarContenedor(productos)){}
 }
 searchForm.addEventListener('submit', buscarProducto)
 
